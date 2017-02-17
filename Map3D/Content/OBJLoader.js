@@ -46,8 +46,25 @@ THREE.OBJLoader.prototype = {
 		var loader = new THREE.XHRLoader( scope.manager );
 		loader.setPath( this.path );
 		loader.load( url, function ( text ) {
-
-			onLoad( scope.parse( text ) );
+			// Added in order to read compressed files (Zip)
+			if (url.split('/').pop().split('.').pop() == 'zip'){
+				//Load Compress file
+				var new_zip = new JSZip();
+				new_zip.loadAsync(text)
+				.then(function(zip) {
+					filename = url.split('/').pop().split('.')[0] + ".obj";
+					text = new_zip.file(filename).async("string")
+					.then(function (content) {
+						//Load the content
+						onLoad( scope.parse( content ) );
+					});
+				});
+	
+            }
+			else {
+				//Load as a normal obj
+				onLoad( scope.parse( text ) );
+			}
 
 		}, onProgress, onError );
 

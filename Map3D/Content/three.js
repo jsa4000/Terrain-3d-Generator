@@ -18200,7 +18200,7 @@ THREE.XHRLoader.prototype = {
 		if ( this.path !== undefined ) url = this.path + url;
 
 		var scope = this;
-
+		
 		var cached = THREE.Cache.get( url );
 
 		if ( cached !== undefined ) {
@@ -18222,7 +18222,11 @@ THREE.XHRLoader.prototype = {
 		var request = new XMLHttpRequest();
 		request.overrideMimeType( 'text/plain' );
 		request.open( 'GET', url, true );
-
+	
+		// Added in order to read compressed files (Zip)
+        if ( url.split('.').pop() == 'zip')
+            request.responseType = "arraybuffer";
+        
 		request.addEventListener( 'load', function ( event ) {
 
 			var response = event.target.response;
